@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuditionServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">audition-api</a> &gt; <a href="index.source.html" class="el_package">com.audition.service.impl</a> &gt; <span class="el_source">AuditionServiceImpl.java</span></div><h1>AuditionServiceImpl.java</h1><pre class="source lang-java linenums">package com.audition.service.impl;
+
+import com.audition.dto.AuditionPostDto;
+import com.audition.dto.CommentsDto;
+import com.audition.integration.AuditionIntegrationClient;
+import com.audition.mapper.AuditionPostMapper;
+import com.audition.mapper.CommentMapper;
+import com.audition.model.AuditionPost;
+import com.audition.model.Comment;
+import com.audition.service.IAuditionService;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+<span class="nc" id="L16">@AllArgsConstructor</span>
+public class AuditionServiceImpl implements IAuditionService {
+
+
+    private AuditionIntegrationClient auditionIntegrationClient;
+
+
+    public List&lt;AuditionPostDto&gt; getPosts() {
+<span class="nc" id="L24">        List&lt;AuditionPost&gt; auditionPostList = auditionIntegrationClient.getPosts();</span>
+<span class="nc" id="L25">        List&lt;AuditionPostDto&gt; auditionPostDtoList = AuditionPostMapper.mapToAuditionPostDtoList(auditionPostList);</span>
+<span class="nc" id="L26">        return auditionPostDtoList;</span>
+    }
+
+    public AuditionPostDto getPostById(final String postId) {
+<span class="nc" id="L30">        AuditionPost auditionPost = auditionIntegrationClient.getPostById(postId);</span>
+<span class="nc" id="L31">        AuditionPostDto auditionPostDto = AuditionPostMapper.mapToAuditionPostDto(auditionPost);</span>
+<span class="nc" id="L32">        return auditionPostDto;</span>
+    }
+
+    public List&lt;CommentsDto&gt; getCommentsByPostId(final int postId) {
+<span class="nc" id="L36">        List&lt;Comment&gt; commentList = auditionIntegrationClient.getCommentsByPostId(postId);</span>
+<span class="nc" id="L37">        List&lt;CommentsDto&gt; commentListDto = CommentMapper.mapToCommentDtoList(commentList);</span>
+<span class="nc" id="L38">        return commentListDto;</span>
+    }
+
+    public List&lt;CommentsDto&gt; getCommentsForPost(final int postId) {
+<span class="nc" id="L42">        List&lt;Comment&gt; commentList = auditionIntegrationClient.getCommentsForPost(postId);</span>
+<span class="nc" id="L43">        List&lt;CommentsDto&gt; commentListDto = CommentMapper.mapToCommentDtoList(commentList);</span>
+<span class="nc" id="L44">        return commentListDto;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

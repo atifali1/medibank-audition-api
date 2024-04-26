@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuditionLogger.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">audition-api</a> &gt; <a href="index.source.html" class="el_package">com.audition.common.logging</a> &gt; <span class="el_source">AuditionLogger.java</span></div><h1>AuditionLogger.java</h1><pre class="source lang-java linenums">package com.audition.common.logging;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.ProblemDetail;
+import org.springframework.stereotype.Component;
+
+@Component
+<span class="nc" id="L10">public class AuditionLogger {</span>
+
+<span class="nc" id="L12">    private static final Logger LOGGER = LoggerFactory.getLogger(AuditionLogger.class);</span>
+
+    public Logger getLogger() {
+<span class="nc" id="L15">        return LOGGER;</span>
+    }
+
+    public void info(final Logger logger, final String message) {
+<span class="nc bnc" id="L19" title="All 2 branches missed.">        if (logger.isInfoEnabled()) {</span>
+<span class="nc" id="L20">            logger.info(message);</span>
+        }
+<span class="nc" id="L22">    }</span>
+
+    public void info(final Logger logger, final String message, final Object object) {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if (logger.isInfoEnabled()) {</span>
+<span class="nc" id="L26">            logger.info(message, object);</span>
+        }
+<span class="nc" id="L28">    }</span>
+
+    public void debug(final Logger logger, final String message) {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        if (logger.isDebugEnabled()) {</span>
+<span class="nc" id="L32">            logger.debug(message);</span>
+        }
+<span class="nc" id="L34">    }</span>
+
+    public void warn(final Logger logger, final String message) {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (logger.isWarnEnabled()) {</span>
+<span class="nc" id="L38">            logger.warn(message);</span>
+        }
+<span class="nc" id="L40">    }</span>
+
+    public void error(final Logger logger, final String message) {
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        if (logger.isErrorEnabled()) {</span>
+<span class="nc" id="L44">            logger.error(message);</span>
+        }
+<span class="nc" id="L46">    }</span>
+
+    public void logErrorWithException(final Logger logger, final String message, final Exception e) {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (logger.isErrorEnabled()) {</span>
+<span class="nc" id="L50">            logger.error(message, e);</span>
+        }
+<span class="nc" id="L52">    }</span>
+
+    public void logStandardProblemDetail(final Logger logger, final ProblemDetail problemDetail, final Exception e) {
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (logger.isErrorEnabled()) {</span>
+<span class="nc" id="L56">            final var message = createStandardProblemDetailMessage(problemDetail);</span>
+<span class="nc" id="L57">            logger.error(message, e);</span>
+        }
+<span class="nc" id="L59">    }</span>
+
+    public void logHttpStatusCodeError(final Logger logger, final String message, final Integer errorCode) {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (logger.isErrorEnabled()) {</span>
+<span class="nc" id="L63">            logger.error(createBasicErrorResponseMessage(errorCode, message) + &quot;\n&quot;);</span>
+        }
+<span class="nc" id="L65">    }</span>
+
+    private String createStandardProblemDetailMessage(final ProblemDetail standardProblemDetail) {
+        //  Add implementation here.
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (standardProblemDetail == null) {</span>
+<span class="nc" id="L70">            return StringUtils.EMPTY;</span>
+        }
+<span class="nc" id="L72">        return new StringBuilder(&quot;Problem Detail - &quot;)</span>
+<span class="nc" id="L73">            .append(&quot;Title: &quot;).append(standardProblemDetail.getTitle()).append(&quot;, &quot;)</span>
+<span class="nc" id="L74">            .append(&quot;Status: &quot;).append(standardProblemDetail.getStatus()).append(&quot;, &quot;)</span>
+<span class="nc" id="L75">            .append(&quot;Detail: &quot;).append(standardProblemDetail.getDetail()).append(&quot;, &quot;)</span>
+<span class="nc" id="L76">            .append(&quot;Type: &quot;).append(standardProblemDetail.getType()).append(&quot;, &quot;)</span>
+<span class="nc" id="L77">            .append(&quot;Instance: &quot;).append(standardProblemDetail.getInstance())</span>
+<span class="nc" id="L78">            .toString();</span>
+    }
+
+
+    private String createBasicErrorResponseMessage(final Integer errorCode, final String message) {
+        //  Add implementation here.
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        if (errorCode == null || message == null) {</span>
+<span class="nc" id="L85">            return StringUtils.EMPTY;</span>
+        }
+<span class="nc" id="L87">        return &quot;Error Code: &quot; + errorCode + &quot;, Message: &quot; + message;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

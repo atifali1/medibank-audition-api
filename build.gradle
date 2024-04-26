@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.0.3'
+    id 'io.spring.dependency-management' version '1.1.0'
+    id "maven-publish"
+    id 'jacoco'
+    id "com.github.spotbugs" version "5.0.14"
+    id "io.freefair.lombok" version "8.0.1"
+    //  Enable checkstyle and PMD. Fix all the relevant issues.
+    id "checkstyle"
+    id "pmd"
+}
+
+group = 'com.audition'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+targetCompatibility = '17'
+
+
+//  allow for code-analysis.gradle to be applied for code analysis.
+ apply from: 'config/code-analysis.gradle'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    set('springCloudVersion', "2022.0.1")
+    set('logbackVersion', "1.4.5")
+    set('slf4jVersion', "2.0.5")
+    set('springdocVersion', "2.0.2")
+}
+
+dependencies {
+
+    //  Clean up unused dependencies. Add comments on consideration on any improvements you made.
+    implementation "org.springframework.boot:spring-boot-starter-actuator"
+    implementation "org.springframework.boot:spring-boot-starter-web"
+    implementation "org.springframework.cloud:spring-cloud-starter-config"
+    implementation "org.springframework.boot:spring-boot-starter-aop"
+    implementation "io.micrometer:micrometer-tracing-bridge-brave"
+    implementation "io.micrometer:micrometer-tracing"
+    implementation "io.micrometer:micrometer-registry-prometheus"
+    implementation "io.micrometer:context-propagation"
+    implementation "org.springframework.cloud:spring-cloud-starter-config"
+    implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
+    // OpenTelemetry API and SDK
+    implementation 'io.opentelemetry:opentelemetry-api:1.10.1'
+    implementation 'io.opentelemetry:opentelemetry-sdk:1.10.1'
+
+
+    developmentOnly "org.springframework.boot:spring-boot-devtools"
+    runtimeOnly "io.micrometer:micrometer-registry-prometheus"
+
+
+    implementation "org.slf4j:slf4j-api:${slf4jVersion}"
+    implementation "ch.qos.logback:logback-core:${logbackVersion}"
+    implementation "ch.qos.logback:logback-classic:${logbackVersion}"
+
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "io.projectreactor:reactor-test"
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+
+checkstyle {
+    toolVersion '8.45.1'  // Configure the version of Checkstyle you need
+    config = rootProject.resources.text.fromFile('config/checkstyle.xml')
+}
+
+pmd {
+    toolVersion = '6.39.0'  // Configure the version of PMD you need
+    ruleSetFiles = files("config/pmd-ruleset.xml")
+    ignoreFailures = false
+}
+
+
+task prepareGitHooks(type: Copy) {
+    from "$projectDir/git-hooks"
+    into "$projectDir/.git/hooks"
+    include "*"
+}
+tasks.matching { it.name != 'prepareGitHooks' }.all { Task task -> task.dependsOn prepareGitHooks }
+
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

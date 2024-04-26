@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WebServiceConfiguration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">audition-api</a> &gt; <a href="index.source.html" class="el_package">com.audition.configuration</a> &gt; <span class="el_source">WebServiceConfiguration.java</span></div><h1>WebServiceConfiguration.java</h1><pre class="source lang-java linenums">package com.audition.configuration;
+
+import com.audition.common.logging.AuditionLogger;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.BufferingClientHttpRequestFactory;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+
+@Configuration
+<span class="nc" id="L30">@AllArgsConstructor</span>
+public class WebServiceConfiguration implements WebMvcConfigurer {
+
+    private static final String YEAR_MONTH_DAY_PATTERN = &quot;yyyy-MM-dd&quot;;
+
+    private AuditionLogger auditionLogger;
+
+    private ResponseHeaderInjector responseHeaderInjector;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+<span class="nc" id="L41">        registry.addInterceptor(responseHeaderInjector);</span>
+<span class="nc" id="L42">    }</span>
+
+    @Bean
+    public ObjectMapper objectMapper() {
+<span class="nc" id="L46">        ObjectMapper mapper = new ObjectMapper();</span>
+        //  configure Jackson Object mapper that
+        //  1. allows for date format as yyyy-MM-dd
+<span class="nc" id="L49">        mapper.setDateFormat(new SimpleDateFormat(&quot;yyyy-MM-dd&quot;));</span>
+        //  2. Does not fail on unknown properties
+<span class="nc" id="L51">        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);</span>
+        //  3. maps to camelCase
+<span class="nc" id="L53">        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.LOWER_CAMEL_CASE);</span>
+        //  4. Does not include null values or empty values
+<span class="nc" id="L55">        mapper.setSerializationInclusion(JsonInclude.Include.NON_EMPTY);</span>
+        //  5. does not write datas as timestamps.
+<span class="nc" id="L57">        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);</span>
+<span class="nc" id="L58">        return mapper;</span>
+    }
+
+    @Bean
+    public LoggingInterceptor loggingInterceptor() {
+<span class="nc" id="L63">        return new LoggingInterceptor(auditionLogger);</span>
+    }
+
+    @Bean
+    public RestTemplate restTemplate() {
+<span class="nc" id="L68">        final RestTemplate restTemplate = new RestTemplate(</span>
+<span class="nc" id="L69">            new BufferingClientHttpRequestFactory(createClientFactory()));</span>
+        //  use object mapper
+<span class="nc" id="L71">        restTemplate.getMessageConverters().removeIf(m -&gt; m instanceof MappingJackson2HttpMessageConverter);</span>
+<span class="nc" id="L72">        restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter(objectMapper()));</span>
+
+        //  create a logging interceptor that logs request/response for rest template calls.
+<span class="nc" id="L75">        restTemplate.getInterceptors().add(loggingInterceptor());</span>
+<span class="nc" id="L76">        return restTemplate;</span>
+    }
+
+
+    private SimpleClientHttpRequestFactory createClientFactory() {
+<span class="nc" id="L81">        final SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();</span>
+<span class="nc" id="L82">        requestFactory.setOutputStreaming(false);</span>
+<span class="nc" id="L83">        return requestFactory;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

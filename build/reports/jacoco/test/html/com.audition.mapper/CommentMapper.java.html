@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommentMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">audition-api</a> &gt; <a href="index.source.html" class="el_package">com.audition.mapper</a> &gt; <span class="el_source">CommentMapper.java</span></div><h1>CommentMapper.java</h1><pre class="source lang-java linenums">package com.audition.mapper;
+
+import com.audition.dto.CommentsDto;
+import com.audition.model.Comment;
+import java.util.List;
+import java.util.stream.Collectors;
+
+<span class="nc" id="L8">public class CommentMapper {</span>
+
+    public static Comment mapToComment(CommentsDto commentsDto) {
+<span class="nc" id="L11">        Comment comment = new Comment();</span>
+<span class="nc" id="L12">        comment.setPostId(commentsDto.getPostId());</span>
+<span class="nc" id="L13">        comment.setId(commentsDto.getId());</span>
+<span class="nc" id="L14">        comment.setName(commentsDto.getName());</span>
+<span class="nc" id="L15">        comment.setEmail(commentsDto.getEmail());</span>
+<span class="nc" id="L16">        comment.setBody(commentsDto.getBody());</span>
+<span class="nc" id="L17">        return comment;</span>
+    }
+
+    public static CommentsDto mapToCommentDto(Comment comment) {
+<span class="nc" id="L21">        CommentsDto commentsDto = new CommentsDto();</span>
+<span class="nc" id="L22">        commentsDto.setPostId(comment.getPostId());</span>
+<span class="nc" id="L23">        commentsDto.setId(comment.getId());</span>
+<span class="nc" id="L24">        commentsDto.setName(comment.getName());</span>
+<span class="nc" id="L25">        commentsDto.setEmail(comment.getEmail());</span>
+<span class="nc" id="L26">        commentsDto.setBody(comment.getBody());</span>
+<span class="nc" id="L27">        return commentsDto;</span>
+    }
+
+    public static List&lt;Comment&gt; mapToCommentList(List&lt;CommentsDto&gt; commentsDto) {
+<span class="nc" id="L31">        return commentsDto.stream()</span>
+<span class="nc" id="L32">            .map(CommentMapper::mapToComment)</span>
+<span class="nc" id="L33">            .collect(Collectors.toList());</span>
+    }
+
+    public static List&lt;CommentsDto&gt; mapToCommentDtoList(List&lt;Comment&gt; comments) {
+<span class="nc" id="L37">        return comments.stream()</span>
+<span class="nc" id="L38">            .map(CommentMapper::mapToCommentDto)</span>
+<span class="nc" id="L39">            .collect(Collectors.toList());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AuditionIntegrationClient.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">audition-api</a> &gt; <a href="index.source.html" class="el_package">com.audition.integration</a> &gt; <span class="el_source">AuditionIntegrationClient.java</span></div><h1>AuditionIntegrationClient.java</h1><pre class="source lang-java linenums">package com.audition.integration;
+
+import com.audition.common.exception.SystemException;
+import com.audition.model.AuditionPost;
+import com.audition.model.Comment;
+import java.util.Arrays;
+import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
+
+@Component
+<span class="fc" id="L15">public class AuditionIntegrationClient {</span>
+
+    private static final String BASE_URL = &quot;https://jsonplaceholder.typicode.com&quot;;
+    private static final String POSTS_ENDPOINT = &quot;/posts&quot;;
+    private static final String COMMENTS_ENDPOINT = &quot;/comments&quot;;
+
+    @Autowired
+    private RestTemplate restTemplate;
+
+
+    public List&lt;AuditionPost&gt; getPosts() {
+        //  make RestTemplate call to get Posts from https://jsonplaceholder.typicode.com/posts
+        try {
+<span class="fc" id="L28">            AuditionPost[] postsArray = restTemplate.getForObject(BASE_URL + POSTS_ENDPOINT, AuditionPost[].class);</span>
+<span class="fc" id="L29">            return Arrays.asList(postsArray);</span>
+<span class="fc" id="L30">        } catch (HttpClientErrorException e) {</span>
+<span class="fc" id="L31">            throw handleHttpClientException(e);</span>
+        }
+
+    }
+
+    public AuditionPost getPostById(final String id) {
+        //  get post by post ID call from https://jsonplaceholder.typicode.com/posts/
+        try {
+<span class="fc" id="L39">            return restTemplate.getForObject(BASE_URL + POSTS_ENDPOINT + &quot;/&quot; + id, AuditionPost.class);</span>
+<span class="fc" id="L40">        } catch (final HttpClientErrorException e) {</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            if (e.getStatusCode() == HttpStatus.NOT_FOUND) {</span>
+<span class="fc" id="L42">                throw new SystemException(&quot;Cannot find a Post with id &quot; + id, &quot;Resource Not Found&quot;,</span>
+<span class="fc" id="L43">                    404);</span>
+            } else {
+<span class="nc" id="L45">                throw handleHttpClientException(e);</span>
+            }
+        }
+    }
+
+    //  Write a method GET comments for a post from https://jsonplaceholder.typicode.com/posts/{postId}/comments - the comments must be returned as part of the post.
+    public List&lt;Comment&gt; getCommentsByPostId(final int postId) {
+        try {
+<span class="fc" id="L53">            return Arrays.asList(restTemplate.getForObject(BASE_URL + POSTS_ENDPOINT + &quot;/&quot; + postId + COMMENTS_ENDPOINT,</span>
+                Comment[].class));
+<span class="fc" id="L55">        } catch (HttpClientErrorException e) {</span>
+<span class="fc" id="L56">            throw handleHttpClientException(e);</span>
+        }
+    }
+
+    //  write a method. GET comments for a particular Post from https://jsonplaceholder.typicode.com/comments?postId={postId}.
+    // The comments are a separate list that needs to be returned to the API consumers. Hint: this is not part of the AuditionPost pojo.
+
+    public List&lt;Comment&gt; getCommentsForPost(final int postId) {
+        try {
+<span class="fc" id="L65">            return Arrays.asList(</span>
+<span class="fc" id="L66">                restTemplate.getForObject(BASE_URL + COMMENTS_ENDPOINT + &quot;?postId=&quot; + postId, Comment[].class));</span>
+<span class="fc" id="L67">        } catch (HttpClientErrorException e) {</span>
+<span class="fc" id="L68">            throw handleHttpClientException(e);</span>
+        }
+    }
+
+
+    private SystemException handleHttpClientException(HttpClientErrorException e) {
+<span class="fc" id="L74">        String errorDetail = String.format(&quot;Error fetching data from external API: %s. Status: %s&quot;, e.getMessage(),</span>
+<span class="fc" id="L75">            e.getStatusCode().toString());</span>
+<span class="fc" id="L76">        return new SystemException(errorDetail, e.getStatusCode().toString(), e.getRawStatusCode());</span>
+    }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
